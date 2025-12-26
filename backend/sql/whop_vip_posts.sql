@@ -1,0 +1,22 @@
+create table public.whop_vip_posts (
+  id text not null,
+  feed_id text null,
+  user_id text null,
+  content text null,
+  rich_content jsonb null,
+  reply_to_post_id text null,
+  mentioned_user_ids text[] null,
+  attachments jsonb null,
+  link_embeds jsonb null,
+  gifs jsonb null,
+  reaction_counts jsonb null,
+  view_count integer null,
+  is_pinned boolean null,
+  is_edited boolean null,
+  is_deleted boolean null,
+  posted_at timestamp with time zone null,
+  edited_at timestamp with time zone null,
+  crawled_at timestamp with time zone null,
+  relation_type text null,
+  constraint whop_vip_posts_pkey primary key (id)
+) TABLESPACE pg_default;

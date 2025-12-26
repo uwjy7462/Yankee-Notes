@@ -1,0 +1,9 @@
+openai>=1.0.0
+requests
+loguru
+pandas
+pandas_market_calendars
+pytz
+
+supabase
+python-dotenv
