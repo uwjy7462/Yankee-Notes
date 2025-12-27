@@ -358,13 +358,21 @@ if __name__ == "__main__":
         logger.info(f"触发总结生成，原因: {trigger_reason}")
         result = summary_run(start_ms, end_ms, "美股交易日复盘", title_desc)
         
-        # --force 模式下，如果当前窗口没有数据，尝试回退到上一个窗口
-        if not result and is_force_run:
+        # 如果当前窗口没有数据，尝试回退到上一个窗口
+        if not result:
             logger.info("当前窗口无有效数据，尝试回退到上一个交易日窗口...")
             
             # 最多回退 3 个窗口（避免无限循环）
             for offset in range(1, 4):
                 prev_start_ms, prev_end_ms, prev_title_desc = get_trading_window_cn_offset(offset)
+                
+                # 关键检查：如果上一个窗口的结束时间 早于或等于 上次总结时间
+                # 说明那个窗口已经做过总结了，不需要再做。
+                # 但如果是强制执行 (--force)，则忽略此检查
+                if not is_force_run and last_time_ms >= prev_end_ms:
+                    logger.info(f"窗口 (offset={offset}) 之前已完成总结，停止回退。")
+                    break
+                
                 prev_start_str = datetime.datetime.fromtimestamp(prev_start_ms/1000).strftime('%Y-%m-%d %H:%M')
                 prev_end_str = datetime.datetime.fromtimestamp(prev_end_ms/1000).strftime('%Y-%m-%d %H:%M')
                 logger.info(f"尝试窗口 (offset={offset}): {prev_start_str} -> {prev_end_str} ({prev_title_desc})")
@@ -375,8 +383,6 @@ if __name__ == "__main__":
                     break
             else:
                 logger.warning("回退 3 个窗口后仍未找到有效数据")
-        elif not result:
-            logger.info("由于没有有效数据，本次未生成总结。")
     else:
         logger.info("未满足触发条件，跳过")
 
