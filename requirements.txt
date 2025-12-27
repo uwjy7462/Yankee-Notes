@@ -7,3 +7,5 @@ pytz
 
 supabase
 python-dotenv
+
+mkdocs-material
